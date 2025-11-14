@@ -106,6 +106,7 @@ function addExpense(e) {
 
     const desc = document.getElementById('expenseDesc').value.trim();
     const amount = parseFloat(document.getElementById('expenseAmount').value);
+    const expenseDate = document.getElementById('expenseDate').value; // 日期（可选）
     const payer = document.getElementById('payerSelect').value;
     const participants = Array.from(document.querySelectorAll('#participantList input[type="checkbox"]:checked'))
         .map(cb => cb.value);
@@ -130,13 +131,25 @@ function addExpense(e) {
         return;
     }
 
+    // 格式化日期显示
+    let dateDisplay = '';
+    if (expenseDate) {
+        // 如果填写了日期，格式化为中文格式
+        const date = new Date(expenseDate + 'T00:00:00');
+        dateDisplay = date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+    } else {
+        // 如果没有填写，使用当前日期
+        dateDisplay = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+    
     expenses.push({
         id: Date.now(),
         desc,
         amount,
         payer,
         participants,
-        date: new Date().toLocaleString('zh-CN')
+        date: dateDisplay,
+        dateInput: expenseDate || null // 保存原始日期输入（用于兼容旧数据）
     });
 
     document.getElementById('expenseForm').reset();
@@ -470,21 +483,13 @@ function renderSettlement(balances, netBalances) {
         mergedTransfers.forEach(transfer => {
             html += `
                 <div class="transfer-item">
-                    <div style="margin-bottom: 6px;">
-                        <strong>${escapeHtml(transfer.from)}</strong> 
-                        向 
-                        <strong>${escapeHtml(transfer.to)}</strong> 
-                        转账 
-                        <strong style="color: #eb3349;">¥${transfer.amount.toFixed(2)}</strong>
-                    </div>`;
-            if (transfer.details.length > 1) {
-                html += '<div style="font-size: 11px; color: #999; padding-left: 8px;">';
-                transfer.details.forEach(detail => {
-                    html += `• ${escapeHtml(detail.desc)}: ¥${detail.amount.toFixed(2)}<br>`;
-                });
-                html += '</div>';
-            }
-            html += '</div>';
+                    <strong>${escapeHtml(transfer.from)}</strong> 
+                    向 
+                    <strong>${escapeHtml(transfer.to)}</strong> 
+                    转账 
+                    <strong style="color: #eb3349;">¥${transfer.amount.toFixed(2)}</strong>
+                </div>
+            `;
         });
         html += '</div>';
     } else {
