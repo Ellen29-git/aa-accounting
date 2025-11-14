@@ -295,53 +295,131 @@ function settleAccounts() {
     renderSettlement(balances, netBalances);
 }
 
-// 最优转账算法（最小转账次数）
-function calculateOptimalTransfers(netBalances) {
-    const transfers = [];
-    const balances = { ...netBalances };
+// 计算每笔消费的转账明细
+function calculateExpenseTransfers(expenses) {
+    const expenseTransfers = [];
     
-    // 分离债权人和债务人
-    const creditors = [];
-    const debtors = [];
-    
-    Object.keys(balances).forEach(name => {
-        if (Math.abs(balances[name]) < 0.01) return; // 忽略小于1分钱的差异
+    expenses.forEach(expense => {
+        // 计算总人头数
+        let totalHeadCount = 0;
+        expense.participants.forEach(participantName => {
+            const member = members.find(m => m.name === participantName);
+            if (member) {
+                totalHeadCount += (1 + member.dependents);
+            }
+        });
         
-        if (balances[name] > 0) {
-            creditors.push({ name, amount: balances[name] });
-        } else {
-            debtors.push({ name, amount: -balances[name] });
-        }
+        if (totalHeadCount === 0) return;
+        
+        const perHead = expense.amount / totalHeadCount;
+        
+        // 对于每个参与人，如果不是付款人，需要向付款人转账
+        expense.participants.forEach(participantName => {
+            if (participantName !== expense.payer) {
+                const member = members.find(m => m.name === participantName);
+                if (member) {
+                    const headCount = 1 + member.dependents;
+                    const amount = perHead * headCount;
+                    if (amount >= 0.01) {
+                        expenseTransfers.push({
+                            from: participantName,
+                            to: expense.payer,
+                            amount: amount,
+                            expenseDesc: expense.desc
+                        });
+                    }
+                }
+            }
+        });
     });
+    
+    return expenseTransfers;
+}
 
-    // 按金额排序
-    creditors.sort((a, b) => b.amount - a.amount);
-    debtors.sort((a, b) => b.amount - a.amount);
-
-    // 贪心算法：每次让最大的债权人和最大的债务人结算
-    let i = 0, j = 0;
-    while (i < creditors.length && j < debtors.length) {
-        const creditor = creditors[i];
-        const debtor = debtors[j];
+// 合并转账（处理双向转账抵消）
+function mergeTransfers(expenseTransfers) {
+    // 先按方向分组
+    const transferMap = {};
+    
+    expenseTransfers.forEach(transfer => {
+        const key = `${transfer.from}_${transfer.to}`;
+        if (!transferMap[key]) {
+            transferMap[key] = {
+                from: transfer.from,
+                to: transfer.to,
+                amount: 0,
+                details: []
+            };
+        }
+        transferMap[key].amount += transfer.amount;
+        transferMap[key].details.push({
+            desc: transfer.expenseDesc,
+            amount: transfer.amount
+        });
+    });
+    
+    // 处理双向转账抵消（例如A→B和B→A）
+    const finalTransfers = [];
+    const processed = new Set();
+    
+    Object.keys(transferMap).forEach(key => {
+        if (processed.has(key)) return;
         
-        const transferAmount = Math.min(creditor.amount, debtor.amount);
+        const transfer = transferMap[key];
+        const reverseKey = `${transfer.to}_${transfer.from}`;
+        const reverseTransfer = transferMap[reverseKey];
         
-        if (transferAmount >= 0.01) {
-            transfers.push({
-                from: debtor.name,
-                to: creditor.name,
-                amount: transferAmount
-            });
+        if (reverseTransfer && reverseTransfer.amount > 0) {
+            // 存在反向转账，进行抵消
+            processed.add(reverseKey);
             
-            creditor.amount -= transferAmount;
-            debtor.amount -= transferAmount;
+            const netAmount = transfer.amount - reverseTransfer.amount;
+            
+            if (Math.abs(netAmount) >= 0.01) {
+                if (netAmount > 0) {
+                    // 正向转账仍有余额
+                    finalTransfers.push({
+                        from: transfer.from,
+                        to: transfer.to,
+                        amount: netAmount,
+                        details: [
+                            ...transfer.details,
+                            ...reverseTransfer.details.map(d => ({
+                                desc: d.desc,
+                                amount: -d.amount
+                            }))
+                        ]
+                    });
+                } else {
+                    // 反向转账仍有余额
+                    finalTransfers.push({
+                        from: reverseTransfer.from,
+                        to: reverseTransfer.to,
+                        amount: -netAmount,
+                        details: [
+                            ...reverseTransfer.details,
+                            ...transfer.details.map(d => ({
+                                desc: d.desc,
+                                amount: -d.amount
+                            }))
+                        ]
+                    });
+                }
+            }
+        } else {
+            // 没有反向转账，直接添加
+            finalTransfers.push({
+                from: transfer.from,
+                to: transfer.to,
+                amount: transfer.amount,
+                details: transfer.details
+            });
         }
         
-        if (creditor.amount < 0.01) i++;
-        if (debtor.amount < 0.01) j++;
-    }
-
-    return transfers;
+        processed.add(key);
+    });
+    
+    return finalTransfers;
 }
 
 // 渲染结算结果
@@ -358,8 +436,9 @@ function renderSettlement(balances, netBalances) {
         net: netBalances[m.name]
     }));
 
-    // 计算最优转账
-    const transfers = calculateOptimalTransfers(netBalances);
+    // 计算转账明细（按每笔消费）
+    const expenseTransfers = calculateExpenseTransfers(expenses);
+    const mergedTransfers = mergeTransfers(expenseTransfers);
 
     let html = '<div class="settlement-summary">';
     html += '<h3>💰 费用汇总</h3>';
@@ -385,19 +464,27 @@ function renderSettlement(balances, netBalances) {
     });
     html += '</div>';
 
-    if (transfers.length > 0) {
+    if (mergedTransfers.length > 0) {
         html += '<div class="settlement-transfers">';
         html += '<h3>💸 转账方案</h3>';
-        transfers.forEach(transfer => {
+        mergedTransfers.forEach(transfer => {
             html += `
                 <div class="transfer-item">
-                    <strong>${escapeHtml(transfer.from)}</strong> 
-                    向 
-                    <strong>${escapeHtml(transfer.to)}</strong> 
-                    转账 
-                    <strong style="color: #eb3349;">¥${transfer.amount.toFixed(2)}</strong>
-                </div>
-            `;
+                    <div style="margin-bottom: 6px;">
+                        <strong>${escapeHtml(transfer.from)}</strong> 
+                        向 
+                        <strong>${escapeHtml(transfer.to)}</strong> 
+                        转账 
+                        <strong style="color: #eb3349;">¥${transfer.amount.toFixed(2)}</strong>
+                    </div>`;
+            if (transfer.details.length > 1) {
+                html += '<div style="font-size: 11px; color: #999; padding-left: 8px;">';
+                transfer.details.forEach(detail => {
+                    html += `• ${escapeHtml(detail.desc)}: ¥${detail.amount.toFixed(2)}<br>`;
+                });
+                html += '</div>';
+            }
+            html += '</div>';
         });
         html += '</div>';
     } else {
