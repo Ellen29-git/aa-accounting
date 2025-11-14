@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <title>AA记账 - 多人出游记账工具</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 AA记账</h1>
+            <p class="subtitle">多人出游记账，轻松AA结算</p>
+        </header>
+
+        <!-- 成员管理 -->
+        <section class="section">
+            <div class="section-header">
+                <h2>👥 成员管理</h2>
+            </div>
+            <div class="member-input-wrapper">
+                <div class="member-input-row">
+                    <input type="text" id="memberName" placeholder="输入成员姓名" maxlength="10">
+                    <div class="dependents-input-group">
+                        <label for="memberDependents" class="dependents-label-inline">👨‍👩‍👧‍👦 家属：</label>
+                        <input type="number" id="memberDependents" placeholder="0" min="0" max="10" value="0" class="dependents-input-inline" title="带家属数量（如带配偶、孩子等，费用按人头均摊）">
+                    </div>
+                    <button id="addMemberBtn" class="btn btn-primary">添加</button>
+                </div>
+                <div class="dependents-hint-text">💡 提示：如带家属，费用按人头均摊，转账时由成员本人完成</div>
+            </div>
+            <div id="memberList" class="member-list"></div>
+        </section>
+
+        <!-- 消费记录 -->
+        <section class="section">
+            <div class="section-header">
+                <h2>📝 添加消费</h2>
+            </div>
+            <form id="expenseForm" class="expense-form">
+                <div class="form-group">
+                    <label>消费项目</label>
+                    <input type="text" id="expenseDesc" placeholder="例如：午餐、门票、打车" required>
+                </div>
+                <div class="form-group">
+                    <label>金额（元）</label>
+                    <input type="number" id="expenseAmount" placeholder="0.00" step="0.01" min="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>付款人</label>
+                    <select id="payerSelect" required></select>
+                </div>
+                <div class="form-group">
+                    <label>参与人员</label>
+                    <div id="participantList" class="participant-list"></div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">添加记录</button>
+            </form>
+        </section>
+
+        <!-- 消费记录列表 -->
+        <section class="section">
+            <div class="section-header">
+                <h2>📋 消费记录</h2>
+                <button id="clearAllBtn" class="btn btn-danger btn-small">清空</button>
+            </div>
+            <div id="expenseList" class="expense-list"></div>
+        </section>
+
+        <!-- AA结算 -->
+        <section class="section">
+            <div class="section-header">
+                <h2>🧮 AA结算</h2>
+            </div>
+            <div id="settlementResult" class="settlement-result"></div>
+            <button id="settleBtn" class="btn btn-success btn-block">开始结算</button>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+

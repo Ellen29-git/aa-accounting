@@ -1,0 +1,488 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px 15px;
+    color: #333;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+    padding: 20px 0;
+}
+
+header h1 {
+    font-size: 32px;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.section {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.section-header h2 {
+    font-size: 18px;
+    color: #333;
+}
+
+/* 成员管理 */
+.member-input-wrapper {
+    margin-bottom: 15px;
+}
+
+.member-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.member-input-row input[type="text"] {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.member-input-row input[type="text"]:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.dependents-input-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8f9fa;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+}
+
+.dependents-label-inline {
+    font-size: 12px;
+    color: #667eea;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.dependents-input-inline {
+    width: 50px;
+    padding: 8px 4px;
+    border: 2px solid #667eea;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    background: white;
+    color: #667eea;
+    transition: all 0.3s;
+}
+
+.dependents-input-inline:focus {
+    outline: none;
+    border-color: #764ba2;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.dependents-input-inline::placeholder {
+    color: #ccc;
+    font-weight: normal;
+}
+
+.dependents-hint-text {
+    font-size: 11px;
+    color: #999;
+    padding-left: 4px;
+    line-height: 1.4;
+}
+
+.member-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.member-tag {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.member-tag .remove {
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.member-tag .remove:hover {
+    opacity: 1;
+}
+
+/* 表单 */
+.expense-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.participant-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.participant-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.participant-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.participant-item label {
+    cursor: pointer;
+    font-size: 14px;
+    user-select: none;
+}
+
+/* 按钮 */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(17, 153, 142, 0.5);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(235, 51, 73, 0.4);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(235, 51, 73, 0.5);
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+/* 消费记录列表 */
+.expense-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.expense-item {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    border-left: 4px solid #667eea;
+    transition: transform 0.2s;
+}
+
+.expense-item:hover {
+    transform: translateX(4px);
+}
+
+.expense-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.expense-item-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: #333;
+}
+
+.expense-item-amount {
+    font-size: 18px;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.expense-item-info {
+    font-size: 13px;
+    color: #666;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.expense-item-remove {
+    margin-top: 8px;
+    text-align: right;
+}
+
+.expense-item-remove button {
+    background: #ff4757;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* 结算结果 */
+.settlement-result {
+    margin-bottom: 15px;
+    min-height: 50px;
+}
+
+.settlement-summary {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.settlement-summary h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 14px;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-item-name {
+    color: #555;
+}
+
+.summary-item-amount {
+    font-weight: 600;
+}
+
+.summary-item-amount.positive {
+    color: #11998e;
+}
+
+.summary-item-amount.negative {
+    color: #eb3349;
+}
+
+.settlement-transfers {
+    background: #fff3cd;
+    border-radius: 12px;
+    padding: 15px;
+    border-left: 4px solid #ffc107;
+}
+
+.settlement-transfers h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.transfer-item {
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.transfer-item:last-child {
+    margin-bottom: 0;
+}
+
+.transfer-item strong {
+    color: #667eea;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+    font-size: 14px;
+}
+
+.empty-state::before {
+    content: "📭";
+    display: block;
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+/* 响应式优化 */
+@media (max-width: 480px) {
+    body {
+        padding: 15px 10px;
+    }
+
+    header h1 {
+        font-size: 28px;
+    }
+
+    .section {
+        padding: 15px;
+    }
+
+    .member-input-row {
+        flex-wrap: wrap;
+    }
+
+    .member-input-row input[type="text"] {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .dependents-input-group {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .member-input-row button {
+        flex: 1;
+        min-width: 80px;
+    }
+
+    .dependents-hint-text {
+        font-size: 10px;
+    }
+}
+
+/* 动画 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.expense-item,
+.settlement-summary,
+.settlement-transfers {
+    animation: fadeIn 0.3s ease-out;
+}
+
